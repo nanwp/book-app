@@ -33,7 +33,9 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
         throw new Error('Failed to fetch books');
       }
       const data = await response.json();
-      setBooks(data.data);
+      if (data.data != null) {
+        setBooks(data.data);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
       setBooks([
@@ -66,11 +68,11 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
         },
         body: JSON.stringify(bookData),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to add book');
       }
-      
+
       const newBook = await response.json();
       setBooks(prev => [newBook.data, ...prev]);
     } catch (err) {
@@ -91,11 +93,11 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
         },
         body: JSON.stringify(bookData),
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to update book');
       }
-      
+
       const updatedBook = await response.json();
       setBooks(prev => prev.map(book => book.id === id ? updatedBook.data : book));
     } catch (err) {
@@ -112,11 +114,11 @@ export const BookProvider: React.FC<BookProviderProps> = ({ children }) => {
       const response = await fetch(`${baseUrl}/api/v1/books/${id}`, {
         method: 'DELETE',
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to delete book');
       }
-      
+
       setBooks(prev => prev.filter(book => book.id !== id));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete book');

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useBooks } from '@/contexts/BookContext';
-import { Book } from '@/types/book';
+import { Book, BookFormData } from '@/types/book';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import ErrorMessage from '@/components/ErrorMessage';
 import Modal from '@/components/Modal';
@@ -13,7 +13,7 @@ import BookForm from '@/components/BookForm';
 export default function BookDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { getBook, updateBook, deleteBook, fetchBooks } = useBooks();
+  const { getBook, updateBook, deleteBook } = useBooks();
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export default function BookDetailPage() {
     }
   }, [bookId, getBook]);
 
-  const handleEdit = async (bookData: any) => {
+  const handleEdit = async (bookData: BookFormData) => {
     if (book) {
       await updateBook(book.id, bookData);
       setBook({ ...book, ...bookData });
@@ -52,12 +52,9 @@ export default function BookDetailPage() {
     }
   };
 
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-
   const handleDelete = async () => {
     await deleteBook(book!.id);
     router.push('/');
-    setShowDeleteConfirm(false);
   };
 
   if (loading) {

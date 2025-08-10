@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useBooks } from '@/contexts/BookContext';
-import { Book } from '@/types/book';
+import { Book, BookFormData } from '@/types/book';
 import BookCard from '@/components/BookCard';
 import Modal from '@/components/Modal';
 import BookForm from '@/components/BookForm';
@@ -19,12 +19,12 @@ export default function Home() {
     fetchBooks();
   }, [fetchBooks]);
 
-  const handleAddBook = async (bookData: any) => {
+  const handleAddBook = async (bookData: BookFormData) => {
     await addBook(bookData);
     setIsAddModalOpen(false);
   };
 
-  const handleEditBook = async (bookData: any) => {
+  const handleEditBook = async (bookData: BookFormData) => {
     if (editingBook) {
       await updateBook(editingBook.id, bookData);
       setIsEditModalOpen(false);
@@ -81,7 +81,7 @@ export default function Home() {
         {/* Loading State */}
         {loading && books.length === 0 ? (
           <div className="flex justify-center items-center py-12">
-            <LoadingSpinner size="lg" message="Memuat daftar buku..." />
+            <LoadingSpinner size="lg" message="Loading..." />
           </div>
         ) : (
           <>

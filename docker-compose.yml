@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  app:
+    hostname: frontend-host
+    restart: unless-stopped
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - NEXT_PUBLIC_API_URL=http://localhost:8080
+    networks:
+      - local
+    ports:
+      - 3000:3000
+  api:
+    hostname: backend-host
+    restart: unless-stopped
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=db
+      - HTTP_PORT=8080
+    volumes:
+      - ./backend/migration/file:/app/migration/file:ro
+      - ./backend/docs:/app/docs:ro
+    networks:
+      - local
+    ports:
+      - 8080:8080
+  postgres:
+    image: postgres:14
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - local
+
+networks:
+  local:
+
+volumes:
+  postgres_data:
+
+

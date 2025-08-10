@@ -30,8 +30,7 @@ import (
 func main() {
 	err := configEnv.Load(".env")
 	if err != nil {
-		log.Error().Err(err).Msg("failed to load environment variables")
-		return
+		log.Warn().Err(err).Msg("no .env file, using real environment")
 	}
 
 	api := server.NewServer()
