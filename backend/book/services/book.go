@@ -101,6 +101,15 @@ func (s *Book) Update(ctx context.Context, bookData *book.Book) (*book.Book, err
 func (s *Book) Delete(ctx context.Context, id int64) error {
 	log := log.Ctx(ctx).With().Str("service", "book").Logger()
 
+	_, err := s.BookRepository.GetByID(ctx, id)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to get existing book for deletion")
+		if err == sql.ErrNoRows {
+			return helper.NewErrNotFound("book not found")
+		}
+		return err
+	}
+
 	if err := s.BookRepository.Delete(ctx, id); err != nil {
 		log.Error().Err(err).Msg("failed to delete book")
 		return err

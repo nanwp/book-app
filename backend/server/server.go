@@ -30,9 +30,10 @@ type Server struct {
 	BookHandler BookHandler
 }
 
-func NewServer() *Server {
+func NewServer(migrationPath string) *Server {
+	fmt.Println("Initializing server...")
 
-	db := db()
+	db := db(migrationPath)
 
 	bookService := services.Book{
 		BookRepository: stores.NewBook(db),
@@ -58,6 +59,8 @@ func (s *Server) Run(ctx context.Context, port string) error {
 		Addr:    fmt.Sprintf(":%s", port),
 		Handler: s.cors().Handler(s.Router),
 	}
+
+	fmt.Println("Server started")
 
 	log.Info().Msgf("server serving on port %s ", port)
 

@@ -39,7 +39,7 @@ func (h *Handler) CreateBook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request book.Book
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			helper.WriteResponse(w, err, nil)
+			helper.WriteResponse(w, helper.NewErrBadRequest("invalid JSON body"), nil)
 			return
 		}
 
@@ -72,7 +72,7 @@ func (h *Handler) GetBookByID() http.HandlerFunc {
 		idStr := rs["id"]
 		idInt, err := strconv.ParseInt(idStr, 10, 64)
 		if err != nil {
-			helper.WriteResponse(w, err, nil)
+			helper.WriteResponse(w, helper.NewErrBadRequest("invalid book ID"), nil)
 			return
 		}
 

@@ -3,13 +3,13 @@ package server
 import (
 	internalDb "byfood-interview/internal/db"
 	"byfood-interview/migration"
-	"log"
 	"os"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/rs/zerolog/log"
 )
 
-func db() *sqlx.DB {
+func db(migrationPath string) *sqlx.DB {
 	config := &internalDb.Config{
 		Host:     os.Getenv("DB_HOST"),
 		Port:     os.Getenv("DB_PORT"),
@@ -20,12 +20,12 @@ func db() *sqlx.DB {
 
 	db, err := internalDb.NewDB(config)
 	if err != nil {
-		log.Fatalf("failed to initialize database: %v", err)
+		log.Fatal().Err(err).Msg("failed to connect to database")
 	}
 
 	migration := migration.NewMigration(db)
-	if err := migration.Run("./migration/file"); err != nil {
-		log.Fatalf("failed to run migrations: %v", err)
+	if err := migration.Run(migrationPath); err != nil {
+		log.Fatal().Err(err).Msg("failed to run migrations")
 	}
 
 	return db

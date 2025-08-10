@@ -33,7 +33,7 @@ func main() {
 		log.Warn().Err(err).Msg("no .env file, using real environment")
 	}
 
-	api := server.NewServer()
+	api := server.NewServer("./migration/file")
 
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
