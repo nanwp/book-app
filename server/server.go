@@ -49,14 +49,17 @@ func NewServer() *Server {
 	return srv
 }
 
-func (s *Server) Run(ctx context.Context, port int) error {
+func (s *Server) Run(ctx context.Context, port string) error {
+	if port == "" {
+		port = "8080" // default port
+	}
 
 	httpS := http.Server{
-		Addr:    fmt.Sprintf(":%d", port),
+		Addr:    fmt.Sprintf(":%s", port),
 		Handler: s.cors().Handler(s.Router),
 	}
 
-	log.Info().Msgf("server serving on port %d ", port)
+	log.Info().Msgf("server serving on port %s ", port)
 
 	go func() {
 		if err := httpS.ListenAndServe(); err != nil && err != http.ErrServerClosed {

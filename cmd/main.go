@@ -8,6 +8,8 @@ import (
 	"syscall"
 
 	"github.com/rs/zerolog/log"
+
+	configEnv "github.com/joho/godotenv"
 )
 
 // @title           Books API
@@ -27,6 +29,12 @@ import (
 // @schemes http
 
 func main() {
+	err := configEnv.Load(".env")
+	if err != nil {
+		log.Error().Err(err).Msg("failed to load environment variables")
+		return
+	}
+
 	api := server.NewServer()
 
 	ctx := context.Background()
@@ -42,5 +50,5 @@ func main() {
 		cancel()
 	}()
 
-	api.Run(ctx, 8080)
+	api.Run(ctx, os.Getenv("HTTP_PORT"))
 }
