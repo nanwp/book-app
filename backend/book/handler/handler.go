@@ -12,10 +12,10 @@ import (
 )
 
 type BookService interface {
-	Create(ctx context.Context, bookData *book.Book) error
+	Create(ctx context.Context, bookData *book.Book) (*book.Book, error)
 	GetByID(ctx context.Context, id int64) (*book.Book, error)
 	GetAll(ctx context.Context) ([]book.Book, error)
-	Update(ctx context.Context, bookData *book.Book) error
+	Update(ctx context.Context, bookData *book.Book) (*book.Book, error)
 	Delete(ctx context.Context, id int64) error
 }
 
@@ -43,12 +43,13 @@ func (h *Handler) CreateBook() http.HandlerFunc {
 			return
 		}
 
-		if err := h.Service.Create(r.Context(), &request); err != nil {
+		data, err := h.Service.Create(r.Context(), &request)
+		if err != nil {
 			helper.WriteResponse(w, err, nil)
 			return
 		}
 
-		helper.WriteResponse(w, nil, nil)
+		helper.WriteResponse(w, nil, data)
 	}
 }
 
@@ -142,10 +143,13 @@ func (h *Handler) UpdateBook() http.HandlerFunc {
 
 		request.ID = idInt
 
-		if err := h.Service.Update(r.Context(), &request); err != nil {
+		data, err := h.Service.Update(r.Context(), &request)
+		if err != nil {
 			helper.WriteResponse(w, err, nil)
 			return
 		}
+
+		helper.WriteResponse(w, nil, data)
 	}
 }
 

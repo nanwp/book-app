@@ -112,9 +112,13 @@ func TestNewBook(t *testing.T) {
 		PublishedYear: 2023,
 	}
 
-	err := bookStore.Create(ctx, &book)
+	id, err := bookStore.Create(ctx, &book)
 	if err != nil {
 		t.Fatalf("failed to create book: %v", err)
+	}
+
+	if id == 0 {
+		t.Fatal("expected book ID to be non-zero")
 	}
 }
 

@@ -36,15 +36,15 @@ func (b *Book) GetAll(ctx context.Context) ([]book.Book, error) {
 	return books, nil
 }
 
-func (b *Book) Create(ctx context.Context, bookData *book.Book) error {
-	query := "INSERT INTO books (title, author, published_year) VALUES ($1, $2, $3)"
-	_, err := b.db.ExecContext(ctx, query, bookData.Title, bookData.Author, bookData.PublishedYear)
+func (b *Book) Create(ctx context.Context, bookData *book.Book) (id int64, err error) {
+	query := "INSERT INTO books (title, author, published_year) VALUES ($1, $2, $3) RETURNING id"
+	err = b.db.QueryRowContext(ctx, query, bookData.Title, bookData.Author, bookData.PublishedYear).Scan(&id)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to insert book")
-		return err
+		return 0, err
 	}
 
-	return nil
+	return id, nil
 }
 
 func (b *Book) Update(ctx context.Context, bookData *book.Book) error {

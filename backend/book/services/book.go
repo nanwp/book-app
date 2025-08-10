@@ -10,7 +10,7 @@ import (
 )
 
 type BookRepository interface {
-	Create(ctx context.Context, bookData *book.Book) error
+	Create(ctx context.Context, bookData *book.Book) (id int64, err error)
 	GetByID(ctx context.Context, id int64) (*book.Book, error)
 	GetAll(ctx context.Context) ([]book.Book, error)
 	Update(ctx context.Context, bookData *book.Book) error
@@ -21,20 +21,22 @@ type Book struct {
 	BookRepository BookRepository
 }
 
-func (s *Book) Create(ctx context.Context, bookData *book.Book) error {
+func (s *Book) Create(ctx context.Context, bookData *book.Book) (*book.Book, error) {
 	log := log.Ctx(ctx).With().Str("service", "book").Logger()
 
 	if err := bookData.Validate(); err != nil {
 		log.Error().Err(err).Msg("invalid book data")
-		return helper.NewErrBadRequest(err.Error())
+		return nil, helper.NewErrBadRequest(err.Error())
 	}
 
-	if err := s.BookRepository.Create(ctx, bookData); err != nil {
+	id, err := s.BookRepository.Create(ctx, bookData)
+	if err != nil {
 		log.Error().Err(err).Msg("failed to create book")
-		return err
+		return nil, err
 	}
 
-	return nil
+	bookData.ID = id
+	return bookData, nil
 }
 
 func (s *Book) GetByID(ctx context.Context, id int64) (*book.Book, error) {
@@ -65,17 +67,17 @@ func (s *Book) GetAll(ctx context.Context) ([]book.Book, error) {
 	return books, nil
 }
 
-func (s *Book) Update(ctx context.Context, bookData *book.Book) error {
+func (s *Book) Update(ctx context.Context, bookData *book.Book) (*book.Book, error) {
 	log := log.Ctx(ctx).With().Str("service", "book").Logger()
 
 	bookExisting, err := s.BookRepository.GetByID(ctx, bookData.ID)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to get existing book for update")
 		if err == sql.ErrNoRows {
-			return helper.NewErrNotFound("book not found")
+			return nil, helper.NewErrNotFound("book not found")
 		}
 
-		return err
+		return nil, err
 	}
 
 	if bookData.Title != "" {
@@ -90,10 +92,10 @@ func (s *Book) Update(ctx context.Context, bookData *book.Book) error {
 
 	if err := s.BookRepository.Update(ctx, bookExisting); err != nil {
 		log.Error().Err(err).Msg("failed to update book")
-		return err
+		return nil, err
 	}
 
-	return nil
+	return bookExisting, nil
 }
 
 func (s *Book) Delete(ctx context.Context, id int64) error {
