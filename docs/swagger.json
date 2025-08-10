@@ -17,7 +17,6 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
     "basePath": "/",
     "paths": {
         "/api/v1/books": {
@@ -409,6 +408,46 @@
                     }
                 }
             }
+        },
+        "/api/v1/process-url": {
+            "post": {
+                "description": "Cleanup a URL by applying the specified operation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URLs"
+                ],
+                "summary": "Cleanup a URL",
+                "parameters": [
+                    {
+                        "description": "URL Cleanup Request",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.processReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.processResp"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.errResp"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -425,6 +464,33 @@
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.errResp": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.processReq": {
+            "type": "object",
+            "properties": {
+                "operation": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.processResp": {
+            "type": "object",
+            "properties": {
+                "processed_url": {
                     "type": "string"
                 }
             }

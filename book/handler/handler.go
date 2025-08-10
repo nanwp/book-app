@@ -39,16 +39,16 @@ func (h *Handler) CreateBook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request book.Book
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 
 		if err := h.Service.Create(r.Context(), &request); err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 
-		helper.WriteResponse(w, r, nil, nil)
+		helper.WriteResponse(w, nil, nil)
 	}
 }
 
@@ -71,22 +71,22 @@ func (h *Handler) GetBookByID() http.HandlerFunc {
 		idStr := rs["id"]
 		idInt, err := strconv.ParseInt(idStr, 10, 64)
 		if err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 
 		bookData, err := h.Service.GetByID(r.Context(), idInt)
 		if err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 
 		if bookData == nil {
-			helper.WriteResponse(w, r, nil, "Book not found")
+			helper.WriteResponse(w, nil, "Book not found")
 			return
 		}
 
-		helper.WriteResponse(w, r, nil, bookData)
+		helper.WriteResponse(w, nil, bookData)
 	}
 }
 
@@ -103,11 +103,11 @@ func (h *Handler) GetAllBooks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		books, err := h.Service.GetAll(r.Context())
 		if err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 
-		helper.WriteResponse(w, r, nil, books)
+		helper.WriteResponse(w, nil, books)
 	}
 }
 
@@ -131,19 +131,19 @@ func (h *Handler) UpdateBook() http.HandlerFunc {
 		idStr := rs["id"]
 		idInt, err := strconv.ParseInt(idStr, 10, 64)
 		if err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 		var request book.Book
 		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 
 		request.ID = idInt
 
 		if err := h.Service.Update(r.Context(), &request); err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 	}
@@ -166,21 +166,21 @@ func (h *Handler) DeleteBook() http.HandlerFunc {
 		rs := mux.Vars(r)
 		id := rs["id"]
 		if id == "" {
-			helper.WriteResponse(w, r, helper.NewErrBadRequest("id is required"), nil)
+			helper.WriteResponse(w, helper.NewErrBadRequest("id is required"), nil)
 			return
 		}
 
 		idInt, err := strconv.ParseInt(id, 10, 64)
 		if err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 
 		if err := h.Service.Delete(r.Context(), idInt); err != nil {
-			helper.WriteResponse(w, r, err, nil)
+			helper.WriteResponse(w, err, nil)
 			return
 		}
 
-		helper.WriteResponse(w, r, nil, "Book deleted successfully")
+		helper.WriteResponse(w, nil, "Book deleted successfully")
 	}
 }

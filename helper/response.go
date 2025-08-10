@@ -14,10 +14,8 @@ type Response struct {
 	Errors  string      `json:"errors,omitempty"`
 }
 
-func failResponseWriter(w http.ResponseWriter, r *http.Request, err error, errStatusCode int) {
+func failResponseWriter(w http.ResponseWriter, err error, errStatusCode int) {
 	w.Header().Set("Content-Type", "application/json")
-
-	log.Error().Err(err).Str("request", r.URL.Path).Msg("error processing request")
 
 	var resp Response
 	w.WriteHeader(errStatusCode)
@@ -31,10 +29,8 @@ func failResponseWriter(w http.ResponseWriter, r *http.Request, err error, errSt
 	}
 }
 
-func successResponseWriter(w http.ResponseWriter, r *http.Request, data interface{}, statusCode int) {
+func successResponseWriter(w http.ResponseWriter, data interface{}, statusCode int) {
 	w.Header().Set("Content-Type", "application/json")
-
-	log.Info().Str("request", r.URL.Path).Msg("success processing request")
 
 	var resp Response
 	w.WriteHeader(statusCode)
@@ -48,21 +44,21 @@ func successResponseWriter(w http.ResponseWriter, r *http.Request, data interfac
 	}
 }
 
-func WriteResponse(w http.ResponseWriter, r *http.Request, err error, data any) {
+func WriteResponse(w http.ResponseWriter, err error, data any) {
 	switch err.(type) {
 	case *ErrForbidden, ErrForbidden:
-		failResponseWriter(w, r, err, http.StatusForbidden)
+		failResponseWriter(w, err, http.StatusForbidden)
 	case *ErrUnauthorized, ErrUnauthorized:
-		failResponseWriter(w, r, err, http.StatusUnauthorized)
+		failResponseWriter(w, err, http.StatusUnauthorized)
 	case *ErrNotFound, ErrNotFound:
-		failResponseWriter(w, r, err, http.StatusNotFound)
+		failResponseWriter(w, err, http.StatusNotFound)
 	case *ErrBadRequest, ErrBadRequest:
-		failResponseWriter(w, r, err, http.StatusBadRequest)
+		failResponseWriter(w, err, http.StatusBadRequest)
 	case *ErrInternalServer, ErrInternalServer:
-		failResponseWriter(w, r, err, http.StatusInternalServerError)
+		failResponseWriter(w, err, http.StatusInternalServerError)
 	case nil:
-		successResponseWriter(w, r, data, http.StatusOK)
+		successResponseWriter(w, data, http.StatusOK)
 	default:
-		failResponseWriter(w, r, err, http.StatusInternalServerError)
+		failResponseWriter(w, err, http.StatusInternalServerError)
 	}
 }

@@ -11,6 +11,23 @@ definitions:
       title:
         type: string
     type: object
+  handler.errResp:
+    properties:
+      error:
+        type: string
+    type: object
+  handler.processReq:
+    properties:
+      operation:
+        type: string
+      url:
+        type: string
+    type: object
+  handler.processResp:
+    properties:
+      processed_url:
+        type: string
+    type: object
   helper.Response:
     properties:
       code:
@@ -21,7 +38,6 @@ definitions:
       message:
         type: string
     type: object
-host: localhost:8080
 info:
   contact:
     email: dev@example.com
@@ -251,6 +267,32 @@ paths:
       summary: Update a book by ID
       tags:
       - books
+  /api/v1/process-url:
+    post:
+      consumes:
+      - application/json
+      description: Cleanup a URL by applying the specified operation
+      parameters:
+      - description: URL Cleanup Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.processReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.processResp'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errResp'
+      summary: Cleanup a URL
+      tags:
+      - URLs
 schemes:
 - http
 swagger: "2.0"

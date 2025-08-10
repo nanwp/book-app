@@ -37,11 +37,6 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 // @Router /api/v1/process-url [post]
 func ProcessURLHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			writeJSON(w, http.StatusMethodNotAllowed, errResp{Error: "method not allowed"})
-			return
-		}
-
 		var req processReq
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			writeJSON(w, http.StatusBadRequest, errResp{Error: "invalid JSON body"})
@@ -53,13 +48,7 @@ func ProcessURLHandler() http.HandlerFunc {
 			return
 		}
 
-		op, err := service.ParseOperation(req.Operation)
-		if err != nil {
-			writeJSON(w, http.StatusBadRequest, errResp{Error: err.Error()})
-			return
-		}
-
-		out, err := service.ProcessURL(req.URL, op)
+		out, err := service.ProcessURL(r.Context(), req.URL, req.Operation)
 		if err != nil {
 			writeJSON(w, http.StatusBadRequest, errResp{Error: err.Error()})
 			return
