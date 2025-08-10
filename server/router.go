@@ -1,9 +1,15 @@
 package server
 
-import "net/http"
+import (
+	_ "byfood-interview/docs"
+	"net/http"
+
+	httpSwagger "github.com/swaggo/http-swagger"
+)
 
 func (s *Server) routes() {
-	// healthcheck
+	s.Router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
+
 	api := s.Router.PathPrefix("/api/v1/").Subrouter()
 
 	api.HandleFunc("/healthcheck", func(w http.ResponseWriter, r *http.Request) {

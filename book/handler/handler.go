@@ -23,6 +23,18 @@ type Handler struct {
 	Service BookService
 }
 
+// CreateBook godoc
+// @Summary Create a new book
+// @Description Create a new book with title, author, and published year
+// @Tags books
+// @Accept json
+// @Produce json
+// @Param book body book.Book true "Book data (without id)"
+// @Success 200 {object} helper.Response{}
+// @Failure 400 {object} helper.Response{errors=string}
+// @Failure 500 {object} helper.Response{errors=string}
+// @Router /api/v1/books [post]
+// CreateBook handles the creation of a new book
 func (h *Handler) CreateBook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var request book.Book
@@ -40,6 +52,18 @@ func (h *Handler) CreateBook() http.HandlerFunc {
 	}
 }
 
+// GetBookByID godoc
+// @Summary Get a book by ID
+// @Description Get a book by its ID
+// @Tags books
+// @Produce json
+// @Param id path int true "Book ID"
+// @Success 200 {object} helper.Response{data=book.Book}
+// @Failure 400 {object} helper.Response{errors=string}
+// @Failure 404 {object} helper.Response{errors=string}
+// @Failure 500 {object} helper.Response{errors=string}
+// @Router /api/v1/books/{id} [get]
+// GetBookByID handles fetching a book by its ID
 func (h *Handler) GetBookByID() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rs := mux.Vars(r)
@@ -66,6 +90,15 @@ func (h *Handler) GetBookByID() http.HandlerFunc {
 	}
 }
 
+// GetAllBooks godoc
+// @Summary Get all books
+// @Description Get a list of all books
+// @Tags books
+// @Produce json
+// @Success 200 {object} helper.Response{data=[]book.Book}
+// @Failure 500 {object} helper.Response{errors=string}
+// @Router /api/v1/books [get]
+// GetAllBooks handles fetching all books
 func (h *Handler) GetAllBooks() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		books, err := h.Service.GetAll(r.Context())
@@ -78,6 +111,20 @@ func (h *Handler) GetAllBooks() http.HandlerFunc {
 	}
 }
 
+// UpdateBook godoc
+// @Summary Update a book by ID
+// @Description Update a book's details by its ID
+// @Tags books
+// @Accept json
+// @Produce json
+// @Param id path int true "Book ID"
+// @Param book body book.Book true "Updated book data (with ID)"
+// @Success 200 {object} helper.Response{}
+// @Failure 400 {object} helper.Response{errors=string}
+// @Failure 404 {object} helper.Response{errors=string}
+// @Failure 500 {object} helper.Response{errors=string}
+// @Router /api/v1/books/{id} [put]
+// UpdateBook handles updating a book's details
 func (h *Handler) UpdateBook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rs := mux.Vars(r)
@@ -102,6 +149,18 @@ func (h *Handler) UpdateBook() http.HandlerFunc {
 	}
 }
 
+// DeleteBook godoc
+// @Summary Delete a book by ID
+// @Description Delete a book by its ID
+// @Tags books
+// @Produce json
+// @Param id path int true "Book ID"
+// @Success 200 {object} helper.Response{}
+// @Failure 400 {object} helper.Response{errors=string}
+// @Failure 404 {object} helper.Response{errors=string}
+// @Failure 500 {object} helper.Response{errors=string}
+// @Router /api/v1/books/{id} [delete]
+// DeleteBook handles deleting a book by its ID
 func (h *Handler) DeleteBook() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rs := mux.Vars(r)

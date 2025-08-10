@@ -10,6 +10,22 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+// @title           Books API
+// @version         1.0
+// @description     Demo OpenAPI (Swagger) untuk net/http + gorilla/mux.
+// @termsOfService  http://example.com/terms/
+
+// @contact.name   API Support
+// @contact.email  dev@example.com
+
+// @license.name  MIT
+// @license.url   https://opensource.org/licenses/MIT
+
+// @host      localhost:8080
+// @BasePath  /
+
+// @schemes http
+
 func main() {
 	api := server.NewServer()
 
